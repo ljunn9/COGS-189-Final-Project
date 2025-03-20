@@ -11,7 +11,7 @@ def bandpass_filter(data, lowcut=2, highcut=40, fs=250, order=4):
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
-    b, a = butter(order, [low, high], btype='band'
+    b, a = butter(order, [low, high], btype='band')
     filtered_data = lfilter(b, a, data, axis=0)
     return filtered_data
 
