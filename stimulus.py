@@ -15,7 +15,7 @@ def flicker_stimuli(num_trials=20, duration=5):
     event_timestamps = []
 
     while running:
-        if trial_count >= num_trials
+        if trial_count >= num_trials:
             running = False
             break 
         trial_start = time.time() 
