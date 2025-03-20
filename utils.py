@@ -84,6 +84,7 @@ def visualize_results():
     df = pd.read_csv(RESULTS_FILE)
     
     accuracy = df["P300 Detected"].mean() * 100 
+    print(accuracy)
 
     plt.figure(figsize=(6, 4))
     sns.barplot(x=["No P300", "P300 Detected"], y=df["P300 Detected"].value_counts().values)
