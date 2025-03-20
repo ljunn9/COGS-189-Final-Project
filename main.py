@@ -4,11 +4,11 @@ from cursor_control import control_cursor
 import threading
 
 def main():
-    # Run visual stimuli in a separate thread
+    # Start visual stimulus in a separate thread
     stimulus_thread = threading.Thread(target=flicker_stimuli)
     stimulus_thread.start()
 
-    # Start EEG processing and cursor control
+    # Process EEG data and control the cursor
     while True:
         eeg_data = process_eeg()
         control_cursor(eeg_data)
