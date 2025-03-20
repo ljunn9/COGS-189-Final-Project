@@ -67,7 +67,7 @@ def extract_p300_epochs(eeg_data, event_timestamps, fs=250, pre_stimulus=100, po
 def detect_p300(eeg_epochs, threshold=5):
     if len(eeg_epochs) == 0:
         return []
-    return ["detected" if np.mean(epoch) > threshold else "undetected" for epoch] 
+    return ["detected" if np.mean(epoch) > threshold else "undetected" for epoch in eeg_epochs] 
 
 RESULTS_FILE = "keyboard_control_results.csv"
 
