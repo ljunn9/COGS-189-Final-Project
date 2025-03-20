@@ -1,6 +1,7 @@
 import time
 import pygame
 import random
+from config import STIMULUS_POSITIONS
 
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
