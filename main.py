@@ -6,23 +6,20 @@ from cursor_control import control_keyboard
 
 # Start LSL EEG Stream
 eeg_inlet = connect_to_eeg()
-event_timestamps = flicker_stimuli()
+event_timestamps = flicker_stimuli(num_trials=10, trial_duration=5)
 
-for trial in range(100):
-    print(f" Running Trial {trial+1}/100")
+for trial in range(10):
+    print(f" Running Trial {trial+1}/10")
 
     sample, _ = eeg_inlet.pull_sample()
-    filtered_data = bandpass_filter(np.array(sample))
-    
-    sample, _ = eeg_inlet.pull_sample(timeout=2.0) 
     if sample is None:
         print("No EEG data received")
-        continue  
-
+        continue 
+        
+    filtered_data = bandpass_filter(np.array(sample))    
     ssvep_classification = classify_ssvep_combined(filtered_data)
     eeg_epochs = extract_p300_epochs(filtered_data, event_timestamps)
     p300_detected = any(detect_p300(eeg_epochs))
-
     control_keyboard(ssvep_classification, p300_detected)
     time.sleep(1)
 
