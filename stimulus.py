@@ -8,8 +8,6 @@ screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("SSVEP + P300 Stimuli")
 
 def flicker_stimuli(num_trials=20, trial_duration=5):
-    start_time = time.time()
-    running = True
     clock = pygame.time.Clock()
     flicker_state = {key: True for key in STIMULUS_POSITIONS}
     event_timestamps = []
@@ -30,6 +28,7 @@ def flicker_stimuli(num_trials=20, trial_duration=5):
 
                 if time.time() % (1 / stim["freq"]) < (1 / (2 * stim["freq"])):
                     flicker_state[key] = not flicker_state[key]  
+                    
             pygame.display.flip()
             clock.tick(60)
 
