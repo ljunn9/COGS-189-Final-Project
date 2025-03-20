@@ -3,3 +3,5 @@ numpy
 scipy
 pylsl
 sklearn
+seaborn
+pandas
