@@ -40,3 +40,15 @@ def perform_cca(eeg_data):
         X_c, Y_c = cca.transform(eeg_data, ref)
         correlations.append(np.corrcoef(X_c.T, Y_c.T)[0, 1])
     return np.argmax(correlations)
+
+def extract_p300_epochs(eeg_data, event_timestamps, fs=250, pre_stimulus=100, post_stimulus=600):
+    """Extracts P300 epochs from EEG data based on stimulus timestamps."""
+    pre_samples = int((pre_stimulus / 1000) * fs)
+    post_samples = int((post_stimulus / 1000) * fs)
+    epochs = []
+    for timestamp in event_timestamps:
+        idx = int(timestamp * fs)
+        if idx - pre_samples > 0 and idx + post_samples < len(eeg_data):
+            epoch = eeg_data[idx - pre_samples : idx + post_samples]
+            epochs.append(epoch)
+    return np.array(epochs)
