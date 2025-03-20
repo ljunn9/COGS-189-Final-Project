@@ -2,6 +2,6 @@ pygame
 numpy
 scipy
 pylsl
-sklearn
+scikit-learn
 seaborn
 pandas
