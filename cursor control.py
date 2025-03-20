@@ -8,13 +8,13 @@ cursor_x, cursor_y = 400, 300
 def control_cursor(classification):
     global cursor_x, cursor_y
 
-    if classification == 0:  # 6 Hz → Up
+    if classification == 0:  # 6 Hz = Up
         cursor_y -= CURSOR_MOVEMENT
-    elif classification == 1:  # 8 Hz → Down
+    elif classification == 1:  # 8 Hz = Down
         cursor_y += CURSOR_MOVEMENT
-    elif classification == 2:  # 10 Hz → Left
+    elif classification == 2:  # 10 Hz = Left
         cursor_x -= CURSOR_MOVEMENT
-    elif classification == 3:  # 12 Hz → Right
+    elif classification == 3:  # 12 Hz = Right
         cursor_x += CURSOR_MOVEMENT
 
     cursor_x = max(0, min(800, cursor_x))
