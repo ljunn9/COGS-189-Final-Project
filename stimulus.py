@@ -7,7 +7,7 @@ pygame.init()
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("SSVEP + P300 Stimuli")
 
-def flicker_stimuli(duration=5):
+def flicker_stimuli(num_trials=20, duration=5):
     start_time = time.time()
     running = True
     clock = pygame.time.Clock()
@@ -15,8 +15,12 @@ def flicker_stimuli(duration=5):
     event_timestamps = []
 
     while running:
-        if time.time() - start_time > duration:
+        if trial_count >= num_trials
             running = False
+            break 
+        trial_start = time.time() 
+
+        while time.time() - trial_start < duration:
         screen.fill((0, 0, 0))        
         p300_target = random.choice(list(STIMULUS_POSITIONS.keys())) # Randomly highlights one target for P300 detection
         event_timestamps.append((time.time(), p300_target))
