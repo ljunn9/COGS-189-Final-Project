@@ -30,27 +30,46 @@ def perform_fft(eeg_data, fs=250):
     return dominant_freq
 
 def perform_cca(eeg_data):
-    reference_freqs = [6, 8, 10, 12]
-    reference_signals = [np.array([np.sin(2 * np.pi * f * np.linspace(0, 1, 250)), 
-                                   np.cos(2 * np.pi * f * np.linspace(0, 1, 250))]).T for f in reference_freqs]
+    reference_freqs = [6, 8, 10, 12]  # Target stimulus frequencies
+    reference_signals = [
+        np.array([np.sin(2 * np.pi * f * np.linspace(0, 1, eeg_data.shape[0])), 
+                  np.cos(2 * np.pi * f * np.linspace(0, 1, eeg_data.shape[0]))]).T 
+        for f in reference_freqs
+    ]
+    
     cca = CCA(n_components=1)
-    correlations = []
-    for ref in reference_signals:
+    best_freq = None
+    highest_correlation = 0
+    
+    for i, ref in enumerate(reference_signals):
         cca.fit(eeg_data, ref)
         X_c, Y_c = cca.transform(eeg_data, ref)
-        correlations.append(np.corrcoef(X_c.T, Y_c.T)[0, 1])
-    return np.argmax(correlations)
+        correlation = abs(np.corrcoef(X_c.T, Y_c.T)[0, 1])  # Use absolute correlation
+        
+        if correlation > highest_correlation:
+            highest_correlation = correlation
+            best_freq = reference_freqs[i]
+
+    print(f"🎯 Best SSVEP Frequency Detected: {best_freq} Hz (Correlation: {highest_correlation:.2f})")
+    return best_freq
 
 def extract_p300_epochs(eeg_data, event_timestamps, fs=250, pre_stimulus=100, post_stimulus=600):
     """Extracts P300 epochs from EEG data based on stimulus timestamps."""
     pre_samples = int((pre_stimulus / 1000) * fs)
     post_samples = int((post_stimulus / 1000) * fs)
+    
+    if not event_timestamps:
+        return np.array([])
+
     epochs = []
+    base_time = event_timestamps[0]  # Reference start time
+    
     for timestamp in event_timestamps:
-        idx = int(timestamp * fs)
-        if idx - pre_samples > 0 and idx + post_samples < len(eeg_data):
+        idx = int((timestamp - base_time) * fs)  # Convert absolute to relative index
+        if idx - pre_samples > 0 and idx + post_samples < eeg_data.shape[0]:
             epoch = eeg_data[idx - pre_samples : idx + post_samples]
             epochs.append(epoch)
+
     return np.array(epochs)
 
 def detect_p300(eeg_epochs, threshold=5):
