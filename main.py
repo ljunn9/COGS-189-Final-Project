@@ -4,12 +4,11 @@ from cursor_control import control_cursor
 import threading
 
 def main():
-    stimulus_thread = threading.Thread(target=flicker_stimuli) # Start visual stimulus in a separate thread
-    stimulus_thread.start()
+    event_timestamps = flicker_stimuli()
 
     while True:
-        eeg_data = process_eeg()
-        control_cursor(eeg_data)
+        ssvep_classification, p300_detected = process_eeg(event_timestamps)
+        control_cursor(ssvep_classification, p300_detected)
 
 if __name__ == "__main__":
     main()
