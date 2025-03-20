@@ -3,7 +3,7 @@ import numpy as np
 from stimulus import flicker_stimuli
 from eeg_processing import connect_to_eeg, bandpass_filter, classify_ssvep_combined, extract_p300_epochs, detect_p300
 from cursor_control import control_keyboard
-from utils import initialize_results_file, log_results
+from utils import initialize_results_file, log_results, visualize_results
 
 initialize_results_file()
 
@@ -27,3 +27,4 @@ for trial in range(10):
     time.sleep(1)
 
 print("Experiment Done")
+visualize_results()
