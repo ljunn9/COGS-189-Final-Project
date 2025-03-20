@@ -1,7 +1,9 @@
 FS = 250  
 
-SSVEP_ELECTRODE_INDICES = [0, 1, 2] 
-P300_ELECTRODE_INDICES = [3, 4, 5]  
+ELECTRODE_INDICES = {
+    "SSVEP": [0, 1, 2], 
+    "P300": [3, 4, 5] 
+}
 
 STIMULUS_POSITIONS = {
     "UP": {"pos": (400, 100), "freq": 6},
