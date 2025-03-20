@@ -37,7 +37,7 @@ def perform_cca(eeg_data):
 
 def classify_ssvep_combined(eeg_data, fs=250):
     fft_classification = perform_fft(eeg_data, fs)
-    cca_classification = classify_ssvep_cca(eeg_data, fs)
+    cca_classification = perform_cca(eeg_data, fs)
 
     if abs(fft_classification - cca_classification) < 1.5:  
         return cca_classification  
