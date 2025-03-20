@@ -1,26 +1,23 @@
-import pygame
-from config import CURSOR_MOVEMENT
+import time
+from pylsl import StreamInfo, StreamOutlet
 
-pygame.init()
-screen = pygame.display.set_mode((800, 600))
-cursor_x, cursor_y = 400, 300
+info = StreamInfo(name='KeyboardControl', type='Control', channel_count=1, channel_format='string', source_id='keyboard_control')
+outlet = StreamOutlet(info)
 
-def control_cursor(ssvep_classification, p300_detected):
-    global cursor_x, cursor_y
+KEYBOARD_LAYOUT = [
+    ["Q", "W", "E", "R", "T", "Y"],
+    ["A", "S", "D", "F", "G", "H"],
+    ["Z", "X", "C", "V", "B", "N"],
+    ["1", "2", "3", "4", "5", "6"],
+]
 
+def type_character(row, col):
+    letter = KEYBOARD_LAYOUT[row][col]
+    outlet.push_sample([letter]) 
+    print(f" Typed Letter: {letter}")
+
+def control_keyboard(ssvep_classification, p300_detected):
     if p300_detected:
-        if ssvep_classification == 0:  # Up
-            cursor_y -= CURSOR_MOVEMENT
-        elif ssvep_classification == 1:  # Down
-            cursor_y += CURSOR_MOVEMENT
-        elif ssvep_classification == 2:  # Left
-            cursor_x -= CURSOR_MOVEMENT
-        elif ssvep_classification == 3:  # Right
-            cursor_x += CURSOR_MOVEMENT
-
-    cursor_x = max(0, min(800, cursor_x))
-    cursor_y = max(0, min(600, cursor_y))
-
-    screen.fill((0, 0, 0))
-    pygame.draw.circle(screen, (0, 255, 0), (cursor_x, cursor_y), 10)
-    pygame.display.flip()
+        row = ssvep_classification // 6  
+        col = ssvep_classification % 6  
+        type_character(row, col)
