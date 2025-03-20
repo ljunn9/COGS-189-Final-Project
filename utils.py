@@ -1,6 +1,9 @@
 import numpy as np
 from scipy.signal import butter, lfilter, welch
 from sklearn.cross_decomposition import CCA
+import pandas as pd
+import os
+import csv
 
 def bandpass_filter(data, lowcut=2, highcut=40, fs=250, order=4):
     nyq = 0.5 * fs
@@ -61,3 +64,16 @@ def extract_p300_epochs(eeg_data, event_timestamps, fs=250, pre_stimulus=100, po
 
 def detect_p300(eeg_epochs, threshold=5):
     return ["detected" if np.mean(epoch) > threshold else "undetected" for epoch] 
+
+RESULTS_FILE = "keyboard_control_results.csv"
+
+def initialize_results_file():
+    if not os.path.exists(RESULTS_FILE):
+        with open(RESULTS_FILE, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Trial", "SSVEP Classification", "P300 Detected", "Typed Letter"])
+
+def log_results(trial, ssvep_classification, p300_detected, typed_letter):
+    with open(RESULTS_FILE, "a", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow([trial, ssvep_classification, p300_detected, typed_letter])
