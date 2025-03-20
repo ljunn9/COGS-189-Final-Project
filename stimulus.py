@@ -12,19 +12,18 @@ def flicker_stimuli():
     flicker_state = {key: True for key in STIMULUS_POSITIONS}
 
     while running:
-        screen.fill((0, 0, 0))  
+        screen.fill((0, 0, 0))
 
         for key, stim in STIMULUS_POSITIONS.items():
             if flicker_state[key]:
                 pygame.draw.circle(screen, (255, 255, 255), stim["pos"], 50)
             
-
             if time.time() % (1 / stim["freq"]) < (1 / (2 * stim["freq"])):
                 flicker_state[key] = not flicker_state[key]
 
         pygame.display.flip()
-        clock.tick(60) 
-        
+        clock.tick(60)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
