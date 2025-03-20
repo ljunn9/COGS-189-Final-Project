@@ -18,10 +18,11 @@ def process_eeg(event_timestamps):
     timestamps = []
     start_time = time.time()
 
-    while time.time() - start_time < 1:
+    while time.time() - start_time < duration:
         sample, timestamp = inlet.pull_sample()
-        eeg_data.append([sample[i] for i in ELECTRODE_INDICES])
-        timestamps.append(timestamp)
+       if sample:
+           eeg_data.append(sample)
+           timestamps.append(timestamp)
 
     eeg_data = np.array(eeg_data)
     
