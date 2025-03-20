@@ -9,9 +9,18 @@ def butter_bandpass(lowcut, highcut, fs, order=4):
     b, a = butter(order, [low, high], btype='band')
     return b, a
 
-def bandpass_filter(data, lowcut=6, highcut=15, fs=250, order=4):
-    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
-    return lfilter(b, a, data, axis=0)
+def adaptive_filter(eeg_data, noise_ref):
+    step_size = 0.001  # Learning rate for the adaptive filter
+    weights = np.zeros(len(noise_ref))
+    output = np.zeros(len(eeg_data))
+
+    for i in range(len(eeg_data)):
+        y = np.dot(weights, noise_ref[i])
+        e = eeg_data[i] - y
+        weights += step_size * e * noise_ref[i]
+        output[i] = e
+
+    return output
 
 def perform_fft(eeg_data, fs=250):
     freqs, psd = welch(eeg_data, fs=fs, nperseg=fs)
