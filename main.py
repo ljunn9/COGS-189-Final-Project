@@ -13,6 +13,11 @@ for trial in range(100):
 
     sample, _ = eeg_inlet.pull_sample()
     filtered_data = bandpass_filter(np.array(sample))
+    
+    sample, _ = eeg_inlet.pull_sample(timeout=2.0) 
+    if sample is None:
+        print("No EEG data received")
+        continue  
 
     ssvep_classification = classify_ssvep_combined(filtered_data)
     eeg_epochs = extract_p300_epochs(filtered_data, event_timestamps)
