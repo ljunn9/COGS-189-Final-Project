@@ -35,6 +35,15 @@ def perform_cca(eeg_data):
         correlations.append(np.corrcoef(X_c.T, Y_c.T)[0, 1])
         return np.argmax(correlations)
 
+def classify_ssvep_combined(eeg_data, fs=250):
+    fft_classification = perform_fft(eeg_data, fs)
+    cca_classification = classify_ssvep_cca(eeg_data, fs)
+
+    if abs(fft_classification - cca_classification) < 1.5:  
+        return cca_classification  
+    else:
+        return fft_classification
+        
 def extract_p300_epochs(eeg_data, event_timestamps, fs=250, pre_stimulus=100, post_stimulus=600):
     pre_samples = int((pre_stimulus / 1000) * fs)
     post_samples = int((post_stimulus / 1000) * fs)
