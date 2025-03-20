@@ -4,6 +4,8 @@ from sklearn.cross_decomposition import CCA
 import pandas as pd
 import os
 import csv
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def bandpass_filter(data, lowcut=2, highcut=40, fs=250, order=4):
     nyq = 0.5 * fs
@@ -77,3 +79,21 @@ def log_results(trial, ssvep_classification, p300_detected, typed_letter):
     with open(RESULTS_FILE, "a", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([trial, ssvep_classification, p300_detected, typed_letter])
+
+def visualize_results():
+    df = pd.read_csv(RESULTS_FILE)
+    
+    accuracy = df["P300 Detected"].mean() * 100 
+
+    plt.figure(figsize=(6, 4))
+    sns.barplot(x=["No P300", "P300 Detected"], y=df["P300 Detected"].value_counts().values)
+    plt.title(f"P300 Detection Rate ({accuracy:.2f}% Accuracy)")
+    plt.ylabel("Number of Trials")
+    plt.show()
+
+    plt.figure(figsize=(8, 6))
+    sns.histplot(df["SSVEP Classification"], bins=24, kde=True)
+    plt.title("SSVEP Classification Distribution")
+    plt.xlabel("Classified Letter (Index)")
+    plt.ylabel("Frequency")
+    plt.show()
