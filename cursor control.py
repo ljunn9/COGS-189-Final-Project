@@ -5,17 +5,18 @@ pygame.init()
 screen = pygame.display.set_mode((800, 600))
 cursor_x, cursor_y = 400, 300
 
-def control_cursor(classification):
+def control_cursor(ssvep_classification, p300_detected):
     global cursor_x, cursor_y
 
-    if classification == 0:  # 6 Hz = Up
-        cursor_y -= CURSOR_MOVEMENT
-    elif classification == 1:  # 8 Hz = Down
-        cursor_y += CURSOR_MOVEMENT
-    elif classification == 2:  # 10 Hz = Left
-        cursor_x -= CURSOR_MOVEMENT
-    elif classification == 3:  # 12 Hz = Right
-        cursor_x += CURSOR_MOVEMENT
+    if p300_detected:
+        if ssvep_classification == 0:  # Up
+            cursor_y -= CURSOR_MOVEMENT
+        elif ssvep_classification == 1:  # Down
+            cursor_y += CURSOR_MOVEMENT
+        elif ssvep_classification == 2:  # Left
+            cursor_x -= CURSOR_MOVEMENT
+        elif ssvep_classification == 3:  # Right
+            cursor_x += CURSOR_MOVEMENT
 
     cursor_x = max(0, min(800, cursor_x))
     cursor_y = max(0, min(600, cursor_y))
