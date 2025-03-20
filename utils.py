@@ -54,7 +54,6 @@ def extract_p300_epochs(eeg_data, event_timestamps, fs=250, pre_stimulus=100, po
     return np.array(epochs)
 
 def detect_p300(eeg_epochs, threshold=5):
-    """Detects P300 presence using amplitude thresholding."""
     p300_presence = []
     for epoch in eeg_epochs:
         avg_amplitude = np.mean(epoch)
