@@ -21,24 +21,26 @@ def flicker_stimuli(num_trials=20, duration=5):
         trial_start = time.time() 
 
         while time.time() - trial_start < duration:
-        screen.fill((0, 0, 0))        
-        p300_target = random.choice(list(STIMULUS_POSITIONS.keys())) # Randomly highlights one target for P300 detection
-        event_timestamps.append((time.time(), p300_target))
+            screen.fill((0, 0, 0))        
+            p300_target = random.choice(list(STIMULUS_POSITIONS.keys())) # Randomly highlights one target for P300 detection
+            event_timestamps.append((time.time(), p300_target))
 
-        for key, stim in STIMULUS_POSITIONS.items():
-            if flicker_state[key]:
-                color = (255, 255, 255) if key != p300_target else (0, 255, 0)  # P300 target in green
-                pygame.draw.circle(screen, color, stim["pos"], 50)
+            for key, stim in STIMULUS_POSITIONS.items():
+                if flicker_state[key]:
+                    color = (255, 255, 255) if key != p300_target else (0, 255, 0)  # P300 target in green
+                    pygame.draw.circle(screen, color, stim["pos"], 50)
             
-            if time.time() % (1 / stim["freq"]) < (1 / (2 * stim["freq"])):
+                if time.time() % (1 / stim["freq"]) < (1 / (2 * stim["freq"])):
                 flicker_state[key] = not flicker_state[key] # Toggle flicker state based on frequency
 
-        pygame.display.flip()
-        clock.tick(60)
+            pygame.display.flip()
+            clock.tick(60)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    break
+        trial_count += 1
 
     pygame.quit()
     return event_timestamps
