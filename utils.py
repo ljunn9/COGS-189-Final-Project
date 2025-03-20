@@ -3,24 +3,26 @@ from scipy.signal import butter, lfilter, welch
 from sklearn.cross_decomposition import CCA
 
 def butter_bandpass(lowcut, highcut, fs, order=4):
-    nyq = 0.5 * fs
+    """Creates a Butterworth bandpass filter."""
+    nyq = 0.5 * fs  # Nyquist frequency
     low = lowcut / nyq
     high = highcut / nyq
     b, a = butter(order, [low, high], btype='band')
     return b, a
 
-def adaptive_filter(eeg_data, noise_ref):
-    step_size = 0.001  # Learning rate for the adaptive filter
-    weights = np.zeros(len(noise_ref))
-    output = np.zeros(len(eeg_data))
+def bandpass_filter(data, lowcut=0.5, highcut=30, fs=250, order=4):
+    """Applies a bandpass filter to the EEG data."""
+    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+    filtered_data = lfilter(b, a, data, axis=0)
+    return filtered_data
 
-    for i in range(len(eeg_data)):
-        y = np.dot(weights, noise_ref[i])
-        e = eeg_data[i] - y
-        weights += step_size * e * noise_ref[i]
-        output[i] = e
-
-    return output
+def adaptive_filter(eeg_data, noise_reference, alpha=0.1):
+    """Applies an adaptive filter to remove noise from EEG data."""
+    if eeg_data.shape != noise_reference.shape:
+        raise ValueError("EEG data and noise reference must have the same shape")
+    
+    filtered_data = eeg_data - alpha * noise_reference
+    return filtered_data
 
 def perform_fft(eeg_data, fs=250):
     freqs, psd = welch(eeg_data, fs=fs, nperseg=fs)
