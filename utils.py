@@ -13,7 +13,7 @@ def bandpass_filter(eeg_data, lowcut=2, highcut=40, fs=250, order=4):
     low = lowcut / nyq
     high = highcut / nyq
     b, a = butter(order, [low, high], btype='band')
-    filtered_data = lfilter(b, a, data, axis=0)
+    filtered_data = lfilter(b, a, eeg_data, axis=0)
     return filtered_data
 
 def adaptive_filter(eeg_data, noise_ref, alpha=0.1):
