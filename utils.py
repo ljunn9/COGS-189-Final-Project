@@ -72,7 +72,7 @@ def detect_p300(eeg_epochs, threshold=5):
 
 def connect_to_eeg():
     print("Searching for EEG stream")
-    streams = resolve_stream('type', 'EEG')
+    streams = resolve_byprop('type', 'EEG')
     
     if not streams:
         raise RuntimeError("No EEG stream found")
