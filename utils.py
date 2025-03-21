@@ -80,7 +80,7 @@ def connect_to_eeg():
     print("EEG stream connected.")
     return StreamInlet(streams[0])
 
-def process_eeg(event_timestamps):
+def process_eeg(event_timestamps, fs=250):
     eeg_inlet = connect_to_eeg()
     eeg_data = []
     print("Collecting EEG data")
