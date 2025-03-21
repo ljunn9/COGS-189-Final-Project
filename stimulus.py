@@ -19,7 +19,7 @@ def flicker_stimuli(num_trials=20, trial_duration=5):
     flicker_state = {key: True for key in STIMULUS_POSITIONS}
     event_timestamps = []
     trial_count = 0 
-    for trial in range(num_trials)
+    for trial in range(num_trials):
         print(f"Trial {trial + 1}/{num_trials} started")
         trial_start = time.time()
         
