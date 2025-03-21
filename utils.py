@@ -18,7 +18,9 @@ def both_filters(eeg_data, noise_ref, lowcut=2, highcut=40, fs=250, order=4, alp
     return filtered_data
 
 def perform_fft(filtered_data, fs=250):
-    freqs, psd = welch(filtered_data, fs=fs, nperseg=min(fs, len(filtered_data)))
+    segment_size = min(fs, len(filtered_data))  # Adjust segment size dynamically
+
+    freqs, psd = welch(filtered_data, fs=fs, nperseg=segment_size)
     dominant_freq = freqs[np.argmax(psd)]
     return dominant_freq
 
@@ -36,7 +38,8 @@ def perform_cca(filtered_data):
         cca.fit(filtered_data, ref)
         X_c, Y_c = cca.transform(filtered_data, ref)
         correlations.append(np.corrcoef(X_c.T, Y_c.T)[0, 1])
-        return np.argmax(correlations)
+        
+    return np.argmax(correlations)
 
 def classify_ssvep_combined(filtered_data):
     fs = 250
