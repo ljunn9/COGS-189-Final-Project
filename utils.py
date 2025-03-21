@@ -31,6 +31,7 @@ def perform_fft(filtered_data, fs=250):
 
 def perform_cca(filtered_data):
     reference_freqs = [6, 8, 10, 12] 
+    num_samples = filtered_data.shape[0]
     reference_signals = [
         np.array([np.sin(2 * np.pi * f * np.linspace(0, 1, filtered_data.shape[0])), 
                   np.cos(2 * np.pi * f * np.linspace(0, 1, filtered_data.shape[0]))]).T 
@@ -46,8 +47,10 @@ def perform_cca(filtered_data):
             
         cca.fit(filtered_data, ref)
         X_c, Y_c = cca.transform(filtered_data, ref)
-
-        correlations.append(np.corrcoef(X_c.T, Y_c.T)[0, 1] if X_c.shape[0] > 1 else 0)
+        if X_c.shape[0] > 1:
+            correlation = np.corrcoef(X_c.T, Y_c.T)[0, 1]
+        else:
+            correlation = 0
         
     return np.argmax(correlations)
 
@@ -55,6 +58,7 @@ def classify_ssvep_combined(filtered_data):
     fs = 250
     if filtered_data.ndim > 1:
         filtered_data = np.mean(filtered_data, axis=1)
+    reference_freqs = [6, 8, 10, 12]
     fft_classification = perform_fft(filtered_data, fs)
     cca_classification = reference_freqs[perform_cca(filtered_data)]
 
