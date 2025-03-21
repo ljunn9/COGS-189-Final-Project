@@ -9,6 +9,14 @@ import seaborn as sns
 from pylsl import StreamInlet, resolve_byprop
 
 def both_filters(eeg_data, noise_ref, lowcut=2, highcut=40, fs=250, order=4, alpha=0.1):
+    # Check for sufficient length
+    if eeg_data is None or eeg_data.shape[0] < 2:
+        raise ValueError("EEG data too short to apply filters.")
+    
+    # Check shape compatibility
+    if eeg_data.shape != noise_ref.shape:
+        raise ValueError("Shape mismatch: EEG data and noise reference must have the same shape.")
+    
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
@@ -18,52 +26,72 @@ def both_filters(eeg_data, noise_ref, lowcut=2, highcut=40, fs=250, order=4, alp
     return filtered_data
 
 def perform_fft(filtered_data, fs=250):
-    if len(filtered_data) < 2:
+    if filtered_data is None or len(filtered_data) < 2:
         raise ValueError("Error: Input signal is too short for FFT computation.")
-
-    segment_size = min(fs, len(filtered_data))  # Ensure nperseg is within valid range
-    if np.var(filtered_data) < 1e-6:  # Check if signal is too flat
-        raise ValueError(" Error: Input signal is flat, FFT cannot extract meaningful frequencies.")
+    
+    if np.var(filtered_data) < 1e-6:
+        raise ValueError("Error: Input signal is flat, FFT cannot extract meaningful frequencies.")
+    
+    segment_size = min(fs, len(filtered_data))
     freqs, psd = welch(filtered_data, fs=fs, nperseg=segment_size)
-
     dominant_freq = freqs[np.argmax(psd)]
     return dominant_freq
 
 def perform_cca(filtered_data):
+    if filtered_data is None or filtered_data.shape[0] < 2:
+        raise ValueError("Error: Input signal is too short for CCA computation.")
+    
     reference_freqs = [6, 8, 10, 12] 
     num_samples = filtered_data.shape[0]
+    
     reference_signals = [
-        np.array([np.sin(2 * np.pi * f * np.linspace(0, 1, filtered_data.shape[0])), 
-                  np.cos(2 * np.pi * f * np.linspace(0, 1, filtered_data.shape[0]))]).T 
+        np.array([
+            np.sin(2 * np.pi * f * np.linspace(0, 1, num_samples)), 
+            np.cos(2 * np.pi * f * np.linspace(0, 1, num_samples))
+        ]).T 
         for f in reference_freqs
     ]
+
     if filtered_data.ndim == 1:
         filtered_data = filtered_data.reshape(-1, 1)
+
     cca = CCA(n_components=1)
     correlations = []
     for ref in reference_signals:
         if ref.shape[0] != filtered_data.shape[0]:
             ref = ref[:filtered_data.shape[0], :]
-            
+        
         cca.fit(filtered_data, ref)
         X_c, Y_c = cca.transform(filtered_data, ref)
-        if X_c.shape[0] > 1:
-            correlation = np.corrcoef(X_c.T, Y_c.T)[0, 1]
-        else:
-            correlation = 0
         
+        if X_c.shape[0] > 1:
+            corr = np.corrcoef(X_c.T, Y_c.T)[0, 1]
+        else:
+            corr = 0
+        
+        correlations.append(corr)
+    
+    if not correlations:
+        raise ValueError("No valid correlations computed for CCA.")
+    
     return np.argmax(correlations)
 
 def classify_ssvep_combined(filtered_data):
     fs = 250
+    reference_freqs = [6, 8, 10, 12]
+
+    if filtered_data is None or filtered_data.shape[0] < 2:
+        raise ValueError("Input signal is too short for classification.")
+
+    # Average across channels if multi-channel
     if filtered_data.ndim > 1:
         filtered_data = np.mean(filtered_data, axis=1)
-    reference_freqs = [6, 8, 10, 12]
+    
     fft_classification = perform_fft(filtered_data, fs)
     cca_classification = reference_freqs[perform_cca(filtered_data)]
 
-    if abs(fft_classification - cca_classification) < 1.5:  
-        return cca_classification  
+    if abs(fft_classification - cca_classification) < 1.5:
+        return cca_classification
     else:
         return fft_classification
         
