@@ -15,34 +15,34 @@ def bandpass_filter(data, lowcut=2, highcut=40, fs=250, order=4):
     filtered_data = lfilter(b, a, data, axis=0)
     return filtered_data
 
-def adaptive_filter(eeg_data, noise_ref, alpha=0.1):
+def adaptive_filter(filtered_data, noise_ref, alpha=0.1):
     filtered_data = eeg_data - alpha * noise_ref
     return filtered_data
 
-def perform_fft(eeg_data, fs=250):
-    freqs, psd = welch(eeg_data, fs=fs, nperseg=fs)
+def perform_fft(filtered_data, fs=250):
+    freqs, psd = welch(filtered_data, fs=fs, nperseg=fs)
     dominant_freq = freqs[np.argmax(psd)]
     return dominant_freq
 
 def perform_cca(eeg_data):
     reference_freqs = [6, 8, 10, 12] 
     reference_signals = [
-        np.array([np.sin(2 * np.pi * f * np.linspace(0, 1, eeg_data.shape[0])), 
-                  np.cos(2 * np.pi * f * np.linspace(0, 1, eeg_data.shape[0]))]).T 
+        np.array([np.sin(2 * np.pi * f * np.linspace(0, 1, filtered_data.shape[0])), 
+                  np.cos(2 * np.pi * f * np.linspace(0, 1, filtered_data.shape[0]))]).T 
         for f in reference_freqs
     ]
     
     cca = CCA(n_components=1)
     correlations = []
     for ref in reference_signals:
-        cca.fit(eeg_data, ref)
-        X_c, Y_c = cca.transform(eeg_data, ref)
+        cca.fit(filtered_data, ref)
+        X_c, Y_c = cca.transform(filtered_data, ref)
         correlations.append(np.corrcoef(X_c.T, Y_c.T)[0, 1])
         return np.argmax(correlations)
 
-def classify_ssvep_combined(eeg_data, fs=250):
-    fft_classification = perform_fft(eeg_data, fs)
-    cca_classification = perform_cca(eeg_data, fs)
+def classify_ssvep_combined(filtered_data, fs=250):
+    fft_classification = perform_fft(filtered_data, fs)
+    cca_classification = perform_cca(filtered_data, fs)
 
     if abs(fft_classification - cca_classification) < 1.5:  
         return cca_classification  
