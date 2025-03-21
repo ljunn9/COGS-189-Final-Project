@@ -42,6 +42,7 @@ def perform_cca(filtered_data):
         return np.argmax(correlations)
 
 def classify_ssvep_combined(filtered_data):
+    fs = 250
     fft_classification = perform_fft(filtered_data, fs)
     cca_classification = perform_cca(filtered_data, fs)
 
