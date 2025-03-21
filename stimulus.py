@@ -1,16 +1,22 @@
 import time
 import pygame
 import random
-from config import STIMULUS_POSITIONS
+from config import P300_FLASH_PROBABILITY, STIMULUS_POSITIONS, P300_FLASH_DURATION, P300_FLASH_INTERVAL
 from pylsl import StreamInfo, StreamOutlet
 
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
-pygame.display.set_caption("SSVEP + P300 Stimuli")
+pygame.display.set_caption("SSVEP + P300 Stimulukas")
 
 info = StreamInfo(name='Markers', type='Markers', channel_count=1, channel_format='int32', source_id='stimulus_markers')
 outlet = StreamOutlet(info)
 
+STIMULUS_POSITIONS = {}
+for row in range(len(KEYBOARD_LAYOUT)):
+    for col in range(len(KEYBOARD_LAYOUT[row])):
+        letter = KEYBOARD_LAYOUT[row][col]
+        STIMULUS_POSITIONS[letter] = {"pos": (100 + col * 100, 100 + row * 100), "freq": 6 + (row * 2 + col)}
+        
 TRIAL_DURATION = 5  
 P300_FLASH_DURATION = 0.1  
 P300_FLASH_INTERVAL = 0.4  
