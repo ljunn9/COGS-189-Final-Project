@@ -85,7 +85,7 @@ def process_eeg(event_timestamps):
     eeg_data = []
     print("Collecting EEG data")
 
-    for _ in range(FS * len(event_timestamps)):  
+    for _ in range(fs * len(event_timestamps)):  
             sample, _ = eeg_inlet.pull_sample()
             eeg_data.append(sample)
 
