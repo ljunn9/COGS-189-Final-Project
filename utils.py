@@ -53,7 +53,7 @@ def extract_p300_epochs(eeg_data, event_timestamps, fs=250, pre_stimulus=100, po
     post_samples = int((post_stimulus / 1000) * fs)
     epochs = []
     if len(event_timestamps) == 0:
-    return np.array([])
+        return np.array([])
         
     base_time = event_timestamps[0]
 
