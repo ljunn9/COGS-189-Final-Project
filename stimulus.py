@@ -23,7 +23,7 @@ def flicker_stimuli(num_trials=20, trial_duration=5):
     event_timestamps = []
     trial_count = 0 
     while trial_count < num_trials:
-        print(f"Trial {trial + 1}/{num_trials} started")
+        print(f"Trial {trial_count + 1}/{num_trials} started")
         trial_start = time.time()
         
         while time.time() - trial_start < TRIAL_DURATION:  
