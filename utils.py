@@ -88,6 +88,8 @@ def process_eeg(event_timestamps, fs=250):
             eeg_data.append(sample)
 
     eeg_data = np.array(eeg_data)
+    noise_ref = np.mean(eeg_data, axis=0)  # Estimate noise from EEG channels
+    filtered_data = both_filters(eeg_data, noise_ref)
     ssvep_classification = classify_ssvep_combined(filtered_data)
     eeg_epochs = extract_p300_epochs(filtered_data, event_timestamps)
     p300_detected = detect_p300(eeg_epochs)
