@@ -69,6 +69,32 @@ def detect_p300(eeg_epochs, threshold=5):
         return []
     return ["detected" if np.mean(epoch) > threshold else "undetected" for epoch in eeg_epochs] 
 
+def connect_to_eeg():
+    print("Searching for EEG stream")
+    streams = resolve_stream('type', 'EEG')
+    
+    if not streams:
+        raise RuntimeError("No EEG stream found")
+
+    print("EEG stream connected.")
+    return StreamInlet(streams[0])
+
+def process_eeg(event_timestamps):
+    eeg_inlet = connect_to_eeg()
+    eeg_data = []
+    print("Collecting EEG data")
+
+for _ in range(FS * len(event_timestamps)):  
+        sample, _ = eeg_inlet.pull_sample()
+        eeg_data.append(sample)
+
+    eeg_data = np.array(eeg_data)
+    ssvep_classification = classify_ssvep_combined(filtered_data)
+    eeg_epochs = extract_p300_epochs(filtered_data, event_timestamps)
+    p300_detected = detect_p300(eeg_epochs)
+
+    return ssvep_classification, p300_detected
+
 RESULTS_FILE = "keyboard_control_results.csv"
 
 def initialize_results_file():
