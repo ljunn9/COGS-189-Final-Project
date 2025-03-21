@@ -31,12 +31,15 @@ def perform_cca(filtered_data):
                   np.cos(2 * np.pi * f * np.linspace(0, 1, filtered_data.shape[0]))]).T 
         for f in reference_freqs
     ]
-    
+    if filtered_data.ndim == 1:
+        filtered_data = filtered_data.reshape(-1, 1)
     cca = CCA(n_components=1)
     correlations = []
     for ref in reference_signals:
         cca.fit(filtered_data, ref)
         X_c, Y_c = cca.transform(filtered_data, ref)
+        X_c = X_c.reshape(-1, 1)  
+        Y_c = Y_c.reshape(-1, 1) 
         correlations.append(np.corrcoef(X_c.T, Y_c.T)[0, 1])
         
     return np.argmax(correlations)
