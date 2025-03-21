@@ -41,18 +41,22 @@ def perform_cca(filtered_data):
     cca = CCA(n_components=1)
     correlations = []
     for ref in reference_signals:
+        if ref.shape[0] != filtered_data.shape[0]:
+            ref = ref[:filtered_data.shape[0], :]
+            
         cca.fit(filtered_data, ref)
         X_c, Y_c = cca.transform(filtered_data, ref)
-        X_c = X_c.reshape(-1, 1)  
-        Y_c = Y_c.reshape(-1, 1) 
-        correlations.append(np.corrcoef(X_c.T, Y_c.T)[0, 1])
+
+        correlations.append(np.corrcoef(X_c.T, Y_c.T)[0, 1] if X_c.shape[0] > 1 else 0)
         
     return np.argmax(correlations)
 
 def classify_ssvep_combined(filtered_data):
     fs = 250
+    if filtered_data.ndim > 1:
+        filtered_data = np.mean(filtered_data, axis=1)
     fft_classification = perform_fft(filtered_data, fs)
-    cca_classification = perform_cca(filtered_data)
+    cca_classification = reference_freqs[perform_cca(filtered_data)]
 
     if abs(fft_classification - cca_classification) < 1.5:  
         return cca_classification  
@@ -70,8 +74,10 @@ def extract_p300_epochs(eeg_data, event_timestamps, fs=250, pre_stimulus=100, po
 
     for timestamp in event_timestamps:
         idx = int((timestamp - base_time) * fs)
-        if idx - pre_samples > 0 and idx + post_samples < len(eeg_data):
-            epochs.append(eeg_data[idx - pre_samples : idx + post_samples])
+        if idx - pre_samples < 0 or idx + post_samples >= len(eeg_data):
+            print(f"⚠️ Skipping event at {timestamp}s (out of range)")
+            continue
+        epochs.append(eeg_data[idx - pre_samples : idx + post_samples])
     return np.array(epochs)
 
 def detect_p300(eeg_epochs, threshold=5):
