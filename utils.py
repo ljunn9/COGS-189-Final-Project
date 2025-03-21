@@ -6,7 +6,7 @@ import os
 import csv
 import matplotlib.pyplot as plt
 import seaborn as sns
-from pylsl import StreamInlet, resolve_stream
+from pylsl import StreamInlet, resolve_byprop
 
 def bandpass_filter(eeg_data, lowcut=2, highcut=40, fs=250, order=4):
     nyq = 0.5 * fs
