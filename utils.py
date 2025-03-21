@@ -88,12 +88,12 @@ for _ in range(FS * len(event_timestamps)):
         sample, _ = eeg_inlet.pull_sample()
         eeg_data.append(sample)
 
-    eeg_data = np.array(eeg_data)
-    ssvep_classification = classify_ssvep_combined(filtered_data)
-    eeg_epochs = extract_p300_epochs(filtered_data, event_timestamps)
-    p300_detected = detect_p300(eeg_epochs)
+eeg_data = np.array(eeg_data)
+ssvep_classification = classify_ssvep_combined(filtered_data)
+eeg_epochs = extract_p300_epochs(filtered_data, event_timestamps)
+p300_detected = detect_p300(eeg_epochs)
 
-    return ssvep_classification, p300_detected
+return ssvep_classification, p300_detected
 
 RESULTS_FILE = "keyboard_control_results.csv"
 
