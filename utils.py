@@ -18,9 +18,14 @@ def both_filters(eeg_data, noise_ref, lowcut=2, highcut=40, fs=250, order=4, alp
     return filtered_data
 
 def perform_fft(filtered_data, fs=250):
-    segment_size = min(fs, len(filtered_data))  # Adjust segment size dynamically
+    if len(filtered_data) < 2:
+        raise ValueError("Error: Input signal is too short for FFT computation.")
 
+    segment_size = min(fs, len(filtered_data))  # Ensure nperseg is within valid range
+    if np.var(filtered_data) < 1e-6:  # Check if signal is too flat
+        raise ValueError(" Error: Input signal is flat, FFT cannot extract meaningful frequencies.")
     freqs, psd = welch(filtered_data, fs=fs, nperseg=segment_size)
+
     dominant_freq = freqs[np.argmax(psd)]
     return dominant_freq
 
