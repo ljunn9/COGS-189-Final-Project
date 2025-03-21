@@ -2,10 +2,14 @@ import time
 import pygame
 import random
 from config import STIMULUS_POSITIONS
+from pylsl import StreamInfo, StreamOutlet
 
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("SSVEP + P300 Stimuli")
+
+info = StreamInfo(name='Markers', type='Markers', channel_count=1, channel_format='int32', source_id='stimulus_markers')
+outlet = StreamOutlet(info)
 
 trial_duration=5
 P300_flash_duration = 0.1
