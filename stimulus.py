@@ -46,10 +46,10 @@ def flicker_stimuli(num_trials=20):
             time.sleep(P300_flash_duration)
         time.sleep(P300_flash_interval)
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                    break
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                break
         
         trial_count += 1  
 
