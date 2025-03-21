@@ -11,7 +11,11 @@ pygame.display.set_caption("SSVEP + P300 Stimuli")
 info = StreamInfo(name="Markers", type="Markers", channel_count=1, channel_format="int32", source_id="stimulus_markers")
 marker_outlet = StreamOutlet(info)
 
-def flicker_stimuli(num_trials=20, trial_duration=5):
+trial_duration=5
+P300_flash_duration = 0.1
+P300_flash_interval = 0.4
+
+def flicker_stimuli(num_trials=20):
     """Displays SSVEP + P300 stimuli and sends LSL event markers"""
     running = True
     clock = pygame.time.Clock()
@@ -39,6 +43,8 @@ def flicker_stimuli(num_trials=20, trial_duration=5):
 
             pygame.display.flip()
             clock.tick(60)
+            time.sleep(P300_flash_duration)
+        time.sleep(P300_flash_interval)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
