@@ -8,20 +8,17 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from pylsl import StreamInlet, resolve_byprop
 
-def bandpass_filter(eeg_data, lowcut=2, highcut=40, fs=250, order=4):
+def both_filters(eeg_data, noise_ref, lowcut=2, highcut=40, fs=250, order=4, alpha=0.1):
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
     b, a = butter(order, [low, high], btype='band')
-    filtered_data = lfilter(b, a, eeg_data, axis=0)
-    return filtered_data
-
-def adaptive_filter(eeg_data, noise_ref, alpha=0.1):
-    filtered_data = eeg_data - alpha * noise_ref
+    bandpassed_data = lfilter(b, a, eeg_data, axis=0)
+    filtered_data = bandpassed_data - alpha * noise_ref
     return filtered_data
 
 def perform_fft(filtered_data, fs=250):
-    freqs, psd = welch(filtered_data, fs=fs, nperseg=fs)
+    freqs, psd = welch(eeg_data, fs=fs, nperseg=min(fs, len(eeg_data)))
     dominant_freq = freqs[np.argmax(psd)]
     return dominant_freq
 
