@@ -18,7 +18,7 @@ def both_filters(eeg_data, noise_ref, lowcut=2, highcut=40, fs=250, order=4, alp
     return filtered_data
 
 def perform_fft(filtered_data, fs=250):
-    freqs, psd = welch(filtered_data, fs=fs, nperseg=min(fs, len(eeg_data)))
+    freqs, psd = welch(filtered_data, fs=fs, nperseg=min(fs, len(filtered_data)))
     dominant_freq = freqs[np.argmax(psd)]
     return dominant_freq
 
