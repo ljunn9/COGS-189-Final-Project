@@ -11,6 +11,13 @@ pygame.display.set_caption("SSVEP + P300 Stimulukas")
 info = StreamInfo(name='Markers', type='Markers', channel_count=1, channel_format='int32', source_id='stimulus_markers')
 outlet = StreamOutlet(info)
 
+KEYBOARD_LAYOUT = [
+    ["Q", "W", "E", "R", "T", "Y"],
+    ["A", "S", "D", "F", "G", "H"],
+    ["Z", "X", "C", "V", "B", "N"],
+    ["1", "2", "3", "4", "5", "6"],
+]
+
 STIMULUS_POSITIONS = {}
 for row in range(len(KEYBOARD_LAYOUT)):
     for col in range(len(KEYBOARD_LAYOUT[row])):
