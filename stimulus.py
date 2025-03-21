@@ -22,7 +22,7 @@ def flicker_stimuli(num_trials=20, trial_duration=5):
     flicker_state = {key: True for key in STIMULUS_POSITIONS}
     event_timestamps = []
     trial_count = 0 
-    for trial in range(num_trials):
+    while trial_count < num_trials:
         print(f"Trial {trial + 1}/{num_trials} started")
         trial_start = time.time()
         
@@ -30,6 +30,7 @@ def flicker_stimuli(num_trials=20, trial_duration=5):
             screen.fill((0, 0, 0))        
             p300_target = random.choice(list(STIMULUS_POSITIONS.keys()))  
             event_timestamps.append((time.time(), p300_target))
+            print(f"Sending marker: {p300_target} at {time.time()}")
             outlet.push_sample([p300_target])
 
             for key, stim in STIMULUS_POSITIONS.items():
